@@ -1,5 +1,6 @@
 var config = {
-	"borrowPeriodDays": 15
+	"borrowPeriodDays": 15,
+	"numBookOneCanBorrow": 3
 };
 
 function range(start, stop, step){
@@ -41,6 +42,14 @@ hoc5App.config(["$routeProvider", function($routeProvider) {
 		when("/book/return", {
 			templateUrl: "partials/book/return.html",
 			controller: "BookReturnCtrl"
+		}).
+		when("/borrower/manage", {
+			templateUrl: "partials/borrower/manage.html",
+			controller: "BorrowerManageCtrl"
+		}).
+		when("/borrower/:phone/edit", {
+			templateUrl: "partials/borrower/edit.html",
+			controller: "BorrowerEditCtrl"
 		}).
 		otherwise({
 			redirectTo: "/menu"
@@ -246,8 +255,7 @@ hoc5App.controller('BorrowerSearchCtrl', ["$scope", "$http", function($scope, $h
 		$scope.query = query;
 	};
 	$scope.CanBorrow = function(borrower) {
-		// TODO: Implement it
-		return true;
+		return borrower.NumBorrowed < config.numBookOneCanBorrow;
 	};
 	$scope.Search = function() {
 		var req;
@@ -291,5 +299,36 @@ hoc5App.controller('BorrowerSearchCtrl', ["$scope", "$http", function($scope, $h
 			$scope.page--;
 			$scope.Search();
 		}
+	};
+}]);
+
+hoc5App.controller('BorrowerManageCtrl', [
+	'$scope', '$location', function($scope, $location){
+	$scope.$parent.page = {
+		title: "Manage Borrowers"
+	};
+	$scope.Edit = function(borrower) {
+		$location.path("/borrower/" + borrower.Phone + "/edit");
+	};
+}]);
+
+hoc5App.controller('BorrowerEditCtrl', [
+	'$scope', '$routeParams', '$http', function($scope, $routeParams, $http){
+	$scope.$parent.page = {
+		title: "Edit Borrower"
+	};
+	$scope.phone = $routeParams.phone;
+	$scope.borrower = null;
+	$http({
+		method: "GET",
+		url: "/api/borrower/" + $scope.phone
+	}).success(function(data, status){
+		$scope.borrower = data.Borrower;
+		$scope.orignal = angular.copy($scope.borrower);
+	}).error(function(data, status){
+		$scope.$parent.page.errors.push(data);
+	});
+	$scope.Reset = function() {
+		$scope.borrower = angular.copy($scope.orignal);
 	};
 }]);

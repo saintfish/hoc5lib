@@ -1,0 +1,40 @@
+<div ng-controller="BorrowerSearchCtrl">
+  <div class="input-group">
+    <input type="search" name="q" class="form-control" autocomplete="off" ng-model="query" ng-init="Search()" ng-change="Search()"/>
+    <span class="input-group-btn">
+    <button class="btn btn-primary" ng-click="Search()">Search</button>
+    </span>
+  </div>
+  <div ng-if="borrowers">
+    <div class="list-group">
+      <div class="list-group-item" ng-repeat="borrower in borrowers">
+        <span class="list-group-item-heading">
+        <span class="text-big">[[borrower.ChineseName || borrower.EnglishName]]</span>
+        </span>
+        <span class="list-group-item-text">
+        <span>[[borrower.Phone]]</span>
+        <span class="label label-success" ng-if="CanBorrow(borrower)">borrowed [[borrower.NumBorrowed]] books</span>
+        <span class="label label-Warning" ng-if="!CanBorrow(borrower)">borrowed [[borrower.NumBorrowed]] books</span>
+        </span>
+        <span class="pull-right">
+        <button ng-click="Edit(borrower)" class="btn btn-default">Edit</button>
+        </span>
+      </div>
+    </div>
+  </div>
+  <div ng-if="query.length != 0 && borrowers.length == 0">
+    <div class="alert alert-warning">
+      No result
+    </div>
+  </div>
+  <div ng-if="error">
+    <div class="alert alert-danger">
+      [[error]]
+    </div>
+  </div>
+  <ul class="pagination">
+    <li ng-class="page > 1 ? '' : 'disabled'"><a href="" ng-click="PrevPage">&laquo;</a></li>
+    <li ng-repeat="p in pages" ng-class="p == page ? 'active' : ''"><a href="" ng-click="SetPage(p)">[[p]]</a></li>
+    <li ng-class="page < pages.length ? '' : 'disabled'"><a href="" ng-click="NextPage">&raquo;</a></li>
+  </ul>
+</div>

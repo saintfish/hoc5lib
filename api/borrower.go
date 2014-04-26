@@ -11,6 +11,17 @@ const (
 	numBorrowersPerPage = 5
 )
 
+func BorrowerGet(ctx *web.Context, phone string) {
+	borrower, err := model.GetBorrower(phone)
+	if err != nil {
+		webutil.Error(ctx, err)
+		return
+	}
+	webutil.Json(ctx, struct {
+		Borrower *model.Borrower
+	}{borrower})
+}
+
 type borrowerSearchResult struct {
 	NumPage, Page int
 	Borrowers     []model.Borrower
