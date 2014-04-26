@@ -58,14 +58,28 @@ hoc5App.controller('BookBorrowCtrl', ['$scope', function($scope){
 		d.setDate(d.getDate() + config.borrowPeriodDays);
 		return d;
 	}();
+	$scope.suggestBook = {
+		show: false
+	};
+	$scope.borrow = {
+		"barcode": "",
+		"phone": "",
+	};
+	$scope.SetBarcode = function(barcode) {
+		$scope.borrow.barcode = barcode;
+		$scope.suggestBook.show = false;
+	};
 }]);
 
-hoc5App.controller('SearchCtrl', ["$scope", "$http", function($scope, $http){
+hoc5App.controller('BookSearchCtrl', ["$scope", "$http", function($scope, $http){
 	$scope.books = [];
 	$scope.query = "";
 	$scope.error = "";
 	$scope.page = 1;
 	$scope.pages = [];
+	$scope.SetQuery = function(query) {
+		$scope.query = query;
+	};
 	$scope.Search = function() {
 		var req;
 		if ($scope.query) {
