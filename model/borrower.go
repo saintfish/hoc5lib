@@ -13,6 +13,7 @@ type Borrower struct {
 	EnglishName string
 	ChineseName string
 	MorePhones  string
+	NumBorrowed int
 }
 
 var borrowerSpec = orm.NewStructSpecBuilder(&Borrower{}).
