@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/saintfish/orm.go"
 	"log"
+	"regexp"
 	"time"
 )
 
@@ -27,6 +28,28 @@ var bookSpec = orm.NewStructSpecBuilder(&Book{}).
 
 func (*Book) TableSpec() orm.TableSpec {
 	return bookSpec
+}
+
+var bookBarcodePattern = regexp.MustCompile(`^\d{13}$`)
+
+func isBarcodeValid(barcode string) bool {
+	return bookBarcodePattern.MatchString(barcode)
+}
+
+func GetBook(barcode string) (*Book, error) {
+	if !isBarcodeValid(barcode) {
+		return nil, errors.New("Invalid barcode.")
+	}
+	o := orm.New(db)
+	b := Book{}
+	err := o.Select().
+		Where("Barcode = ?", barcode).
+		Find(&b)
+	if err != nil {
+		log.Println(err)
+		return nil, errors.New("Book not found.")
+	}
+	return &b, nil
 }
 
 func SearchBooksCount(query string) (int, error) {

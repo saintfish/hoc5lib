@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/saintfish/orm.go"
 	"log"
+	"regexp"
 )
 
 type Borrower struct {
@@ -24,6 +25,28 @@ var borrowerSpec = orm.NewStructSpecBuilder(&Borrower{}).
 
 func (*Borrower) TableSpec() orm.TableSpec {
 	return borrowerSpec
+}
+
+var borrowerPhonePattern = regexp.MustCompile(`^\d{10}$`)
+
+func isPhoneValid(phone string) bool {
+	return borrowerPhonePattern.MatchString(phone)
+}
+
+func GetBorrower(phone string) (*Borrower, error) {
+	if !isPhoneValid(phone) {
+		return nil, errors.New("Invalid phone number.")
+	}
+	o := orm.New(db)
+	b := Borrower{}
+	err := o.Select().
+		Where("Phone = ?", phone).
+		Find(&b)
+	if err != nil {
+		log.Println(err)
+		return nil, errors.New("Borrower not found.")
+	}
+	return &b, nil
 }
 
 func SearchBorrowersCount(query string) (int, error) {

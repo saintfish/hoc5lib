@@ -35,6 +35,15 @@
 				</div>
 			</div>
 		</nav>
+		<div class="container">
+		<h1>[[page.title]]</h1>
+<div ng-if="page.messages" class="container alert alert-info">
+	<p ng-repeat="msg in page.messages">[[msg]]</p>
+</div>
+<div ng-if="page.errors" class="container alert alert-danger">
+	<p ng-repeat="err in page.errors">[[err]]</p>
+</div>
+		</div>
 		<div class="container" ng-view>
 		</div>
 	</body>

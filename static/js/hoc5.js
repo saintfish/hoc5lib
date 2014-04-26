@@ -49,7 +49,8 @@ hoc5App.controller('MenuCtrl', ['$scope', function($scope){
 	};
 }]);
 
-hoc5App.controller('BookBorrowCtrl', ['$scope', function($scope){
+hoc5App.controller('BookBorrowCtrl', [
+	'$scope', '$http', '$location', function($scope, $http, $location){
 	$scope.$parent.page = {
 		title: "Borrow Books"
 	};
@@ -66,6 +67,8 @@ hoc5App.controller('BookBorrowCtrl', ['$scope', function($scope){
 		"barcode": "",
 		"phone": "",
 	};
+	$scope.inProgress = false;
+
 	$scope.IsBarcodeValid = function() {
 		return !!$scope.borrow.barcode;
 	};
@@ -82,7 +85,34 @@ hoc5App.controller('BookBorrowCtrl', ['$scope', function($scope){
 		$scope.suggest.book = b;
 		$scope.suggest.borrower = b;
 	};
-
+	$scope.Submit = function() {
+		if ($scope.inProgress) {
+			return;
+		}
+		$scope.$parent.page.errors = [];
+		if (!$scope.IsPhoneValid()) {
+			$scope.$parent.page.errors.push("Phone number is invalid");
+		}
+		if (!$scope.IsBarcodeValid()) {
+			$scope.$parent.page.errors.push('Barcode is invalid');
+		}
+		if ($scope.$parent.page.errors.length) {
+			return;
+		}
+		$scope.inProgress = true;
+		$http({
+			method: "POST",
+			url: "/api/book/borrow",
+			params: $scope.borrow
+		}).success(function(data, status){
+			// TODO: This seems not working. Fix it later
+			$scope.$parent.page.messages = ["Borrow book successful"];
+			$location.path("/menu");
+		}).error(function(data, status){
+			$scope.$parent.page.errors = [data];
+			$scope.inProgress = false;
+		});
+	};
 }]);
 
 hoc5App.controller('BookSearchCtrl', ["$scope", "$http", function($scope, $http){
