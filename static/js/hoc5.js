@@ -1,3 +1,7 @@
+var config = {
+	"borrowPeriodDays": 15
+};
+
 function range(start, stop, step){
     if (typeof stop=='undefined') {
         // one param defined
@@ -49,6 +53,11 @@ hoc5App.controller('BookBorrowCtrl', ['$scope', function($scope){
 	$scope.$parent.page = {
 		title: "Borrow Books"
 	};
+	$scope.returnDate = function(){
+		var d = new Date();
+		d.setDate(d.getDate() + config.borrowPeriodDays);
+		return d;
+	}();
 }]);
 
 hoc5App.controller('SearchCtrl', ["$scope", "$http", function($scope, $http){
