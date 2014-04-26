@@ -8,6 +8,7 @@ import (
 )
 
 const MaxBooksOneCanBorrow = 3
+const MaxDaysBorrowPeriod = 15
 
 type BorrowEntry struct {
 	Id         int
@@ -60,6 +61,9 @@ func BorrowBook(borrower *Borrower, book *Book) (*BorrowEntry, error) {
 		return nil, errors.New("Error in borrowing the book.")
 	}
 	book.Availability = false
+	now := time.Now()
+	returnDate := now.AddDate(0, 0, MaxDaysBorrowPeriod)
+	book.AvailableAfter = &returnDate
 	err = o.UpdateByPrimaryKey(book)
 	if err != nil {
 		log.Println(err)
@@ -128,6 +132,7 @@ func ReturnBook(borrower *Borrower, book *Book) (*BorrowEntry, error) {
 		return nil, errors.New("Error in returning book.")
 	}
 	book.Availability = true
+	book.AvailableAfter = nil
 	err = o.UpdateByPrimaryKey(book)
 	if err != nil {
 		return nil, errors.New("Error in returning book.")
