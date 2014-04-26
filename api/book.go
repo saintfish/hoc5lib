@@ -11,7 +11,7 @@ const (
 	numBooksPerPage = 10
 )
 
-type searchResult struct {
+type bookSearchResult struct {
 	NumPage, Page int
 	Books         []model.Book
 }
@@ -39,7 +39,7 @@ func BookSearch(ctx *web.Context) {
 		webutil.Error(ctx, err)
 		return
 	}
-	webutil.Json(ctx, searchResult{
+	webutil.Json(ctx, bookSearchResult{
 		NumPage: numPage,
 		Page:    page,
 		Books:   books,
@@ -68,7 +68,7 @@ func BookList(ctx *web.Context) {
 		webutil.Error(ctx, err)
 		return
 	}
-	webutil.Json(ctx, searchResult{
+	webutil.Json(ctx, bookSearchResult{
 		NumPage: numPage,
 		Page:    page,
 		Books:   books,

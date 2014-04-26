@@ -13,5 +13,8 @@ func main() {
 	})
 	web.Get("/api/book/search", api.BookSearch)
 	web.Get("/api/book/list", api.BookList)
+	web.Get("/api/borrower/search", api.BorrowerSearch)
+	web.Get("/api/borrower/list", api.BorrowerList)
+
 	web.Run("0.0.0.0:9000")
 }

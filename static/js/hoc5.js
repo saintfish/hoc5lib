@@ -58,17 +58,31 @@ hoc5App.controller('BookBorrowCtrl', ['$scope', function($scope){
 		d.setDate(d.getDate() + config.borrowPeriodDays);
 		return d;
 	}();
-	$scope.suggestBook = {
-		show: false
+	$scope.suggest = {
+		book: false,
+		borrower: false
 	};
 	$scope.borrow = {
 		"barcode": "",
 		"phone": "",
 	};
+	$scope.IsBarcodeValid = function() {
+		return !!$scope.borrow.barcode;
+	};
+	$scope.IsPhoneValid = function() {
+		return !!$scope.borrow.phone;
+	};
 	$scope.SetBarcode = function(barcode) {
 		$scope.borrow.barcode = barcode;
-		$scope.suggestBook.show = false;
 	};
+	$scope.SetPhone = function(phone) {
+		$scope.borrow.phone = phone;
+	};
+	$scope.ShowSuggest = function(b) {
+		$scope.suggest.book = b;
+		$scope.suggest.borrower = b;
+	};
+
 }]);
 
 hoc5App.controller('BookSearchCtrl', ["$scope", "$http", function($scope, $http){
@@ -102,6 +116,64 @@ hoc5App.controller('BookSearchCtrl', ["$scope", "$http", function($scope, $http)
 			$scope.error = "";
 		}).error(function(data, status){
 			$scope.books = [];
+			$scope.page = 1;
+			$scope.pages = [];
+			$scope.error = data;
+		});
+	};
+	$scope.SetPage = function(page) {
+		$scope.page = page;
+		$scope.Search();
+	};
+	$scope.NextPage = function() {
+		if ($scope.page < $scope.pages.length) {
+			$scope.page++;
+			$scope.Search();
+		}
+	};
+	$scope.PrevPage = function() {
+		if ($scope.page > 1) {
+			$scope.page--;
+			$scope.Search();
+		}
+	};
+}]);
+
+hoc5App.controller('BorrowerSearchCtrl', ["$scope", "$http", function($scope, $http){
+	$scope.borrowers = [];
+	$scope.query = "";
+	$scope.error = "";
+	$scope.page = 1;
+	$scope.pages = [];
+	$scope.SetQuery = function(query) {
+		$scope.query = query;
+	};
+	$scope.CanBorrow = function(borrower) {
+		// TODO: Implement it
+		return true;
+	};
+	$scope.Search = function() {
+		var req;
+		if ($scope.query) {
+			req = $http({
+				method: "GET",
+				url: "/api/borrower/search",
+				params: {"q": $scope.query, "page": $scope.page}
+			});
+		} else {
+			req = $http({
+				method: "GET",
+				url: "/api/borrower/list",
+				params: {"page": $scope.page}
+			});
+		}
+		req.success(function(data, status){
+			$scope.borrowers = data.Borrowers;
+			$scope.page = data.Page;
+			$scope.pages = range(1, data.NumPage+1);
+			$scope.error = "";
+		}).error(function(data, status){
+			$scope.borrowers = [];
 			$scope.page = 1;
 			$scope.pages = [];
 			$scope.error = data;
