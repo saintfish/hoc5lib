@@ -16,5 +16,9 @@
 			</span>
 		</div>
 	</div>
+	<div ng-if="borrower" class="alert alert-info">
+		Currently borrowed by:
+		<span class="text-big">[[borrower.ChineseName || borrower.EnglishName]] ([[borrower.Phone]])</span>
+	</div>
 </div>
 <button ng-click="Submit()" class="btn btn-primary" type="submit">Return</a>

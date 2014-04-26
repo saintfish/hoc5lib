@@ -73,3 +73,69 @@ func BorrowBook(borrower *Borrower, book *Book) (*BorrowEntry, error) {
 	}
 	return &entry, nil
 }
+
+func GetBorrowerFromBook(book *Book) (*Borrower, error) {
+	if book.Availability {
+		return nil, errors.New("The book is already returned.")
+	}
+	o := orm.New(db)
+	entry := BorrowEntry{}
+	err := o.Select().
+		Where("BookId = ? AND ReturnDate IS NULL", book.Id).
+		Find(&entry)
+	if err != nil {
+		log.Println(err)
+		return nil, errors.New("Error in querying borrow record.")
+	}
+	borrower := Borrower{Id: entry.BorrowerId}
+	err = o.FindByPrimaryKey(&borrower)
+	if err != nil {
+		log.Println(err)
+		return nil, errors.New("Unable to find the borrower for the book.")
+	}
+	return &borrower, nil
+}
+
+func ReturnBook(borrower *Borrower, book *Book) (*BorrowEntry, error) {
+	if book.Availability {
+		return nil, errors.New("The book is already returned.")
+	}
+	tx, err := db.Begin()
+	if err != nil {
+		return nil, errors.New("Error in returning book.")
+	}
+	defer func() {
+		if err != nil {
+			tx.Rollback()
+		} else {
+			tx.Commit()
+		}
+	}()
+	o := orm.New(tx)
+
+	entry := BorrowEntry{}
+	err = o.Select().
+		Where("BorrowerId = ? AND BookId = ? AND ReturnDate IS NULL", borrower.Id, book.Id).
+		Find(&entry)
+	if err != nil {
+		return nil, errors.New("Borrow record not found.")
+	}
+
+	now := time.Now()
+	entry.ReturnDate = &now
+	err = o.UpdateByPrimaryKey(&entry)
+	if err != nil {
+		return nil, errors.New("Error in returning book.")
+	}
+	book.Availability = true
+	err = o.UpdateByPrimaryKey(book)
+	if err != nil {
+		return nil, errors.New("Error in returning book.")
+	}
+	borrower.NumBorrowed--
+	err = o.UpdateByPrimaryKey(borrower)
+	if err != nil {
+		return nil, errors.New("Error in returning book.")
+	}
+	return &entry, nil
+}

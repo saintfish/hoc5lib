@@ -107,7 +107,8 @@ hoc5App.controller('BookBorrowCtrl', [
 		$http({
 			method: "POST",
 			url: "/api/book/borrow",
-			params: $scope.borrow
+			headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+			data: $.param($scope.borrow)
 		}).success(function(data, status){
 			// TODO: This seems not working. Fix it later
 			$scope.$parent.page.messages = ["Borrow book successful"];
@@ -119,7 +120,8 @@ hoc5App.controller('BookBorrowCtrl', [
 	};
 }]);
 
-hoc5App.controller('BookReturnCtrl', ['$scope', function($scope){
+hoc5App.controller('BookReturnCtrl', [
+	'$scope', '$http', '$location', function($scope, $http, $location){
 	$scope.$parent.page = {
 		title: "Return Books"
 	};
@@ -132,8 +134,22 @@ hoc5App.controller('BookReturnCtrl', ['$scope', function($scope){
 	$scope.return_ = {
 		barcode: ""
 	};
+	$scope.borrower = null;
 	$scope.SetBarcode = function(barcode){
 		$scope.return_.barcode = barcode;
+		if (barcode) {
+			$http({
+				method: "GET",
+				url: "/api/book/" + barcode + "/borrower"
+			}).success(function(data, status){
+				$scope.borrower = data.Borrower;
+			}).error(function(data, status){
+				$scope.$parent.errors.push(data);
+				$scope.borrower = null;
+			});
+		} else {
+			$scope.borrower = null;
+		}
 	};
 	$scope.IsBarcodeValid = function() {
 		return !!$scope.return_.barcode;
@@ -150,6 +166,19 @@ hoc5App.controller('BookReturnCtrl', ['$scope', function($scope){
 			return;
 		}
 		$scope.inProgress = true;
+		$http({
+			method: "POST",
+			url: "/api/book/return",
+			headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+			data: $.param($scope.return_)
+		}).success(function(data, status){
+			// TODO: This seems not working. Fix it later
+			$scope.$parent.page.messages = ["Return book successful"];
+			$location.path("/menu");
+		}).error(function(data, status){
+			$scope.$parent.page.errors = [data];
+			$scope.inProgress = false;
+		});
 	};
 }]);
 
