@@ -1,0 +1,20 @@
+<div class="form-group" ng-controller="BookSearchCtrl" ng-class="{true: 'has-success', false: 'has-error'}[IsBarcodeValid()]">
+	<label for="book">Book:</label>
+	<input ng-model="query" ng-change="Search(); SetBarcode('')" ng-focus="Search(); suggest.book = true" type="text" id="book" class="form-control" autocomplete="off"/>
+	<div ng-show="books &amp;&amp; suggest.book" class="list-group">
+		<div class="list-group-item" ng-repeat="book in books">
+			<span class="list-group-item-heading">
+			<span class="text-big">[[book.Title]]</span>
+			</span>
+			<span class="list-group-item-text">
+			<span class="author" ng-if="book.Authors">by [[book.Authors]]</span>
+			<span class="label label-success" ng-if="book.Availability">Available</span>
+			<span class="label label-warning" ng-if="!book.Availability">Unavailable</span>
+			</span>
+			<span class="pull-right">
+			<a href="" class="btn btn-default" ng-if="!book.Availability" ng-click="SetQuery(book.Barcode); SetBarcode(book.Barcode); ShowSuggest(false)">Choose</a>
+			</span>
+		</div>
+	</div>
+</div>
+<button ng-click="Submit()" class="btn btn-primary" type="submit">Return</a>

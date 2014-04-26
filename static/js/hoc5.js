@@ -38,6 +38,10 @@ hoc5App.config(["$routeProvider", function($routeProvider) {
 			templateUrl: "partials/book/borrow.html",
 			controller: "BookBorrowCtrl"
 		}).
+		when("/book/return", {
+			templateUrl: "partials/book/return.html",
+			controller: "BookReturnCtrl"
+		}).
 		otherwise({
 			redirectTo: "/menu"
 		});
@@ -112,6 +116,40 @@ hoc5App.controller('BookBorrowCtrl', [
 			$scope.$parent.page.errors = [data];
 			$scope.inProgress = false;
 		});
+	};
+}]);
+
+hoc5App.controller('BookReturnCtrl', ['$scope', function($scope){
+	$scope.$parent.page = {
+		title: "Return Books"
+	};
+	$scope.suggest = {
+		book: false
+	};
+	$scope.ShowSuggest = function(show){
+		$scope.suggest.book = show;
+	};
+	$scope.return_ = {
+		barcode: ""
+	};
+	$scope.SetBarcode = function(barcode){
+		$scope.return_.barcode = barcode;
+	};
+	$scope.IsBarcodeValid = function() {
+		return !!$scope.return_.barcode;
+	};
+	$scope.Submit = function(){
+		if ($scope.inProgress) {
+			return;
+		}
+		$scope.$parent.page.errors = [];
+		if (!$scope.IsBarcodeValid()) {
+			$scope.$parent.page.errors.push('Barcode is invalid');
+		}
+		if ($scope.$parent.page.errors.length) {
+			return;
+		}
+		$scope.inProgress = true;
 	};
 }]);
 
