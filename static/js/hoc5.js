@@ -30,6 +30,10 @@ hoc5App.config(["$routeProvider", function($routeProvider) {
 			templateUrl: "partials/menu.html",
 			controller: "MenuCtrl"
 		}).
+		when("/book/borrow", {
+			templateUrl: "partials/book/borrow.html",
+			controller: "BookBorrowCtrl"
+		}).
 		otherwise({
 			redirectTo: "/menu"
 		});
@@ -38,6 +42,12 @@ hoc5App.config(["$routeProvider", function($routeProvider) {
 hoc5App.controller('MenuCtrl', ['$scope', function($scope){
 	$scope.$parent.page = {
 		title: "Menu"
+	};
+}]);
+
+hoc5App.controller('BookBorrowCtrl', ['$scope', function($scope){
+	$scope.$parent.page = {
+		title: "Borrow Books"
 	};
 }]);
 
