@@ -1,26 +1,26 @@
 <p class="btn-toolbar">
-  <button ng-click="New()" class="btn btn-default">New Borrower</button>
+  <button ng-click="New()" class="btn btn-default">New Book</button>
 </p>
-<div ng-controller="BorrowerSearchCtrl">
+<div ng-controller="BookSearchCtrl">
   <div class="input-group">
     <input type="search" name="q" class="form-control" autocomplete="off" ng-model="query" ng-init="Search()" ng-change="Search()"/>
     <span class="input-group-btn">
     <button class="btn btn-primary" ng-click="Search()">Search</button>
     </span>
   </div>
-  <div ng-if="borrowers">
+  <div ng-if="books">
     <div class="list-group">
-      <div class="list-group-item" ng-repeat="borrower in borrowers">
+      <div class="list-group-item" ng-repeat="book in books">
         <span class="list-group-item-heading">
-        <span class="text-big">[[borrower.ChineseName || borrower.EnglishName]]</span>
+        <span class="text-big">[[book.Title]]</span>
         </span>
         <span class="list-group-item-text">
-        <span>[[borrower.Phone]]</span>
-        <span class="label label-success" ng-if="CanBorrow(borrower)">borrowed [[borrower.NumBorrowed]] books</span>
-        <span class="label label-Warning" ng-if="!CanBorrow(borrower)">borrowed [[borrower.NumBorrowed]] books</span>
+        <span class="author" ng-if="book.Authors">by [[book.Authors]]</span>
+        <span class="label label-success" ng-if="book.Availability">Available</span>
+        <span class="label label-warning" ng-if="!book.Availability">Unavailable</span>
         </span>
         <span class="pull-right">
-        <button ng-click="Edit(borrower)" class="btn btn-default">Edit</button>
+        <button ng-click="Edit(book)" class="btn btn-default">Edit</button>
         </span>
       </div>
     </div>

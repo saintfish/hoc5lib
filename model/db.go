@@ -16,4 +16,6 @@ func init() {
 	}
 	o := orm.New(db)
 	o.CreateTable(&Book{}, true)
+	o.CreateTable(&Borrower{}, true)
+	o.CreateTable(&BorrowEntry{}, true)
 }

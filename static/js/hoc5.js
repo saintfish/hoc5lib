@@ -43,6 +43,10 @@ hoc5App.config(["$routeProvider", function($routeProvider) {
 			templateUrl: "partials/book/return.html",
 			controller: "BookReturnCtrl"
 		}).
+		when("/book/manage", {
+			templateUrl: "partials/book/manage.html",
+			controller: "BookManageCtrl"
+		}).
 		when("/borrower/manage", {
 			templateUrl: "partials/borrower/manage.html",
 			controller: "BorrowerManageCtrl"
@@ -382,5 +386,18 @@ hoc5App.controller('BorrowerNewCtrl', [
 			$scope.$parent.page.errors = [data];
 			$scope.inProgress = false;
 		});
+	};
+}]);
+
+hoc5App.controller('BookManageCtrl', [
+	'$scope', '$location', function($scope, $location){
+	$scope.$parent.page = {
+		title: "Manage Books"
+	};
+	$scope.Edit = function(book) {
+		$location.path("/book/" + book.Barcode + "/edit");
+	};
+	$scope.New = function() {
+		$location.path("/book/new");
 	};
 }]);
