@@ -22,6 +22,27 @@ func BorrowerGet(ctx *web.Context, phone string) {
 	}{borrower})
 }
 
+func BorrowerAdd(ctx *web.Context) {
+	borrower := &model.Borrower{}
+	err := webutil.ReadJson(ctx, borrower)
+	if err != nil {
+		webutil.Error(ctx, err)
+		return
+	}
+	err = model.IsBorrowerValid(borrower)
+	if err != nil {
+		webutil.Error(ctx, err)
+		return
+	}
+	err = model.AddBorrower(borrower)
+	if err != nil {
+		webutil.Error(ctx, err)
+		return
+	}
+	webutil.Json(ctx, borrower)
+	return
+}
+
 func BorrowerUpdate(ctx *web.Context, phone string) {
 	newValue := &model.Borrower{}
 	err := webutil.ReadJson(ctx, newValue)

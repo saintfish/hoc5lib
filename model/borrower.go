@@ -59,19 +59,42 @@ func GetBorrower(phone string) (*Borrower, error) {
 	return &b, nil
 }
 
+func AddBorrower(borrower *Borrower) error {
+	err := IsBorrowerValid(borrower)
+	if err != nil {
+		return err
+	}
+	borrower.Id = 0
+	borrower.NumBorrowed = 0
+	b, _ := GetBorrower(borrower.Phone)
+	if b != nil {
+		return errors.New("Phone is used.")
+	}
+	o := orm.New(db)
+	err = o.Insert(borrower)
+	if err != nil {
+		return errors.New("Error in adding borrower")
+	}
+	return nil
+}
+
 func UpdateBorrower(origValue, newValue *Borrower) error {
 	if newValue.Phone != origValue.Phone {
 		b, _ := GetBorrower(newValue.Phone)
 		if b != nil {
-			return errors.New("Barcode is used.")
+			return errors.New("Phone is used.")
 		}
 	}
 	origValue.Phone = newValue.Phone
 	origValue.EnglishName = newValue.EnglishName
 	origValue.ChineseName = newValue.ChineseName
 	origValue.MorePhones = newValue.MorePhones
+	err := IsBorrowerValid(origValue)
+	if err != nil {
+		return err
+	}
 	o := orm.New(db)
-	err := o.UpdateByPrimaryKey(origValue)
+	err = o.UpdateByPrimaryKey(origValue)
 	if err != nil {
 		return errors.New("Error in updating borrower")
 	}

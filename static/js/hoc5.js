@@ -47,6 +47,10 @@ hoc5App.config(["$routeProvider", function($routeProvider) {
 			templateUrl: "partials/borrower/manage.html",
 			controller: "BorrowerManageCtrl"
 		}).
+		when("/borrower/new", {
+			templateUrl: "partials/borrower/edit.html",
+			controller: "BorrowerNewCtrl"
+		}).
 		when("/borrower/:phone/edit", {
 			templateUrl: "partials/borrower/edit.html",
 			controller: "BorrowerEditCtrl"
@@ -310,6 +314,9 @@ hoc5App.controller('BorrowerManageCtrl', [
 	$scope.Edit = function(borrower) {
 		$location.path("/borrower/" + borrower.Phone + "/edit");
 	};
+	$scope.New = function() {
+		$location.path("/borrower/new");
+	};
 }]);
 
 hoc5App.controller('BorrowerEditCtrl', [
@@ -340,6 +347,34 @@ hoc5App.controller('BorrowerEditCtrl', [
 		$http({
 			method: "POST",
 			url: "/api/borrower/" + $scope.phone + "/update",
+			data: $scope.borrower
+		}).success(function(data, status){
+			$location.path("/menu");
+		}).error(function(data, status){
+			$scope.$parent.page.errors = [data];
+			$scope.inProgress = false;
+		});
+	};
+}]);
+
+hoc5App.controller('BorrowerNewCtrl', [
+	'$scope', '$http', '$location', function($scope, $http, $location){
+	$scope.$parent.page = {
+		title: "New Borrower"
+	};
+	$scope.borrower = {};
+	$scope.Reset = function() {
+		$scope.borrower = {};
+	};
+	$scope.inProgress = false;
+	$scope.Submit = function() {
+		if ($scope.inProgress) {
+			return;
+		}
+		$scope.inProgress = true;
+		$http({
+			method: "POST",
+			url: "/api/borrower",
 			data: $scope.borrower
 		}).success(function(data, status){
 			$location.path("/menu");
