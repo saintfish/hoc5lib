@@ -33,6 +33,16 @@ func isPhoneValid(phone string) bool {
 	return borrowerPhonePattern.MatchString(phone)
 }
 
+func IsBorrowerValid(borrower *Borrower) error {
+	if !isPhoneValid(borrower.Phone) {
+		return errors.New("Invalid phone number.")
+	}
+	if len(borrower.ChineseName) == 0 && len(borrower.EnglishName) == 0 {
+		return errors.New("Both names are empty.")
+	}
+	return nil
+}
+
 func GetBorrower(phone string) (*Borrower, error) {
 	if !isPhoneValid(phone) {
 		return nil, errors.New("Invalid phone number.")
@@ -47,6 +57,25 @@ func GetBorrower(phone string) (*Borrower, error) {
 		return nil, errors.New("Borrower not found.")
 	}
 	return &b, nil
+}
+
+func UpdateBorrower(origValue, newValue *Borrower) error {
+	if newValue.Phone != origValue.Phone {
+		b, _ := GetBorrower(newValue.Phone)
+		if b != nil {
+			return errors.New("Barcode is used.")
+		}
+	}
+	origValue.Phone = newValue.Phone
+	origValue.EnglishName = newValue.EnglishName
+	origValue.ChineseName = newValue.ChineseName
+	origValue.MorePhones = newValue.MorePhones
+	o := orm.New(db)
+	err := o.UpdateByPrimaryKey(origValue)
+	if err != nil {
+		return errors.New("Error in updating borrower")
+	}
+	return nil
 }
 
 func SearchBorrowersCount(query string) (int, error) {

@@ -313,7 +313,7 @@ hoc5App.controller('BorrowerManageCtrl', [
 }]);
 
 hoc5App.controller('BorrowerEditCtrl', [
-	'$scope', '$routeParams', '$http', function($scope, $routeParams, $http){
+	'$scope', '$routeParams', '$http', '$location', function($scope, $routeParams, $http, $location){
 	$scope.$parent.page = {
 		title: "Edit Borrower"
 	};
@@ -326,9 +326,26 @@ hoc5App.controller('BorrowerEditCtrl', [
 		$scope.borrower = data.Borrower;
 		$scope.orignal = angular.copy($scope.borrower);
 	}).error(function(data, status){
-		$scope.$parent.page.errors.push(data);
+		$scope.$parent.page.errors = [data];
 	});
 	$scope.Reset = function() {
 		$scope.borrower = angular.copy($scope.orignal);
+	};
+	$scope.inProgress = false;
+	$scope.Submit = function() {
+		if ($scope.inProgress) {
+			return;
+		}
+		$scope.inProgress = true;
+		$http({
+			method: "POST",
+			url: "/api/borrower/" + $scope.phone + "/update",
+			data: $scope.borrower
+		}).success(function(data, status){
+			$location.path("/menu");
+		}).error(function(data, status){
+			$scope.$parent.page.errors = [data];
+			$scope.inProgress = false;
+		});
 	};
 }]);

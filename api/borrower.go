@@ -22,6 +22,32 @@ func BorrowerGet(ctx *web.Context, phone string) {
 	}{borrower})
 }
 
+func BorrowerUpdate(ctx *web.Context, phone string) {
+	newValue := &model.Borrower{}
+	err := webutil.ReadJson(ctx, newValue)
+	if err != nil {
+		webutil.Error(ctx, err)
+		return
+	}
+	err = model.IsBorrowerValid(newValue)
+	if err != nil {
+		webutil.Error(ctx, err)
+		return
+	}
+	origValue, err := model.GetBorrower(phone)
+	if err != nil {
+		webutil.Error(ctx, err)
+		return
+	}
+	err = model.UpdateBorrower(origValue, newValue)
+	if err != nil {
+		webutil.Error(ctx, err)
+		return
+	}
+	webutil.Json(ctx, origValue)
+	return
+}
+
 type borrowerSearchResult struct {
 	NumPage, Page int
 	Borrowers     []model.Borrower

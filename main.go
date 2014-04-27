@@ -19,6 +19,7 @@ func main() {
 	web.Get("/api/book/(\\d+)/borrower", api.BookGetBorrower)
 	web.Post("/api/book/return", api.BookReturn)
 	web.Get("/api/borrower/(\\d+)", api.BorrowerGet)
+	web.Post("/api/borrower/(\\d+)/update", api.BorrowerUpdate)
 
 	web.Run("0.0.0.0:9000")
 }
