@@ -70,8 +70,8 @@ func BorrowerUpdate(ctx *web.Context, phone string) {
 }
 
 type borrowerSearchResult struct {
-	NumPage, Page int
-	Borrowers     []model.Borrower
+	NumResults, NumPage, Page int
+	Borrowers                 []model.Borrower
 }
 
 func BorrowerSearch(ctx *web.Context) {
@@ -98,9 +98,10 @@ func BorrowerSearch(ctx *web.Context) {
 		return
 	}
 	webutil.Json(ctx, borrowerSearchResult{
-		NumPage:   numPage,
-		Page:      page,
-		Borrowers: borrowers,
+		NumResults: numResults,
+		NumPage:    numPage,
+		Page:       page,
+		Borrowers:  borrowers,
 	})
 }
 
@@ -127,9 +128,10 @@ func BorrowerList(ctx *web.Context) {
 		return
 	}
 	webutil.Json(ctx, borrowerSearchResult{
-		NumPage:   numPage,
-		Page:      page,
-		Borrowers: borrowers,
+		NumResults: numResults,
+		NumPage:    numPage,
+		Page:       page,
+		Borrowers:  borrowers,
 	})
 	return
 }

@@ -3,26 +3,7 @@ var config = {
 	"numBookOneCanBorrow": 3
 };
 
-function range(start, stop, step){
-    if (typeof stop=='undefined') {
-        // one param defined
-        stop = start;
-        start = 0;
-    }
-    if (typeof step=='undefined') {
-        step = 1;
-    }
-    if ((step>0 && start>=stop) || (step<0 && start<=stop)) {
-        return [];
-    }
-    var result = [];
-    for (var i=start; step>0 ? i<stop : i>stop; i+=step) {
-        result.push(i);
-    }
-    return result;
-}
-
-var hoc5App = angular.module("hoc5App", ["ngRoute"]);
+var hoc5App = angular.module("hoc5App", ["ngRoute", "ui.bootstrap"]);
 
 hoc5App.config(["$interpolateProvider", function($interpolateProvider) {
 	$interpolateProvider.startSymbol('[[');
@@ -203,53 +184,38 @@ hoc5App.controller('BookSearchCtrl', ["$scope", "$http", function($scope, $http)
 	$scope.books = [];
 	$scope.query = "";
 	$scope.error = "";
-	$scope.page = 1;
-	$scope.pages = [];
+	$scope.currentPage = 1;
+	$scope.numResults = 0;
+	$scope.itemsPerPage = 10;
 	$scope.SetQuery = function(query) {
 		$scope.query = query;
 	};
-	$scope.Search = function() {
+	$scope.Search = function(page) {
 		var req;
 		if ($scope.query) {
 			req = $http({
 				method: "GET",
 				url: "/api/book/search",
-				params: {"q": $scope.query, "page": $scope.page}
+				params: {"q": $scope.query, "page": page}
 			});
 		} else {
 			req = $http({
 				method: "GET",
 				url: "/api/book/list",
-				params: {"page": $scope.page}
+				params: {"page": page}
 			});
 		}
 		req.success(function(data, status){
 			$scope.books = data.Books;
-			$scope.page = data.Page;
-			$scope.pages = range(1, data.NumPage+1);
+			$scope.currentPage = data.Page;
+			$scope.numResults = data.NumResults;
 			$scope.error = "";
 		}).error(function(data, status){
 			$scope.books = [];
-			$scope.page = 1;
-			$scope.pages = [];
+			$scope.currentPage = 1;
+			$scope.numResults = 0;
 			$scope.error = data;
 		});
-	};
-	$scope.SetPage = function(page) {
-		$scope.page = page;
-		$scope.Search();
-	};
-	$scope.NextPage = function() {
-		if ($scope.page < $scope.pages.length) {
-			$scope.page++;
-			$scope.Search();
-		}
-	};
-	$scope.PrevPage = function() {
-		if ($scope.page > 1) {
-			$scope.page--;
-			$scope.Search();
-		}
 	};
 }]);
 
@@ -257,56 +223,41 @@ hoc5App.controller('BorrowerSearchCtrl', ["$scope", "$http", function($scope, $h
 	$scope.borrowers = [];
 	$scope.query = "";
 	$scope.error = "";
-	$scope.page = 1;
-	$scope.pages = [];
+	$scope.currentPage = 1;
+	$scope.numResults = 0;
+	$scope.itemsPerPage = 5;
 	$scope.SetQuery = function(query) {
 		$scope.query = query;
 	};
 	$scope.CanBorrow = function(borrower) {
 		return borrower.NumBorrowed < config.numBookOneCanBorrow;
 	};
-	$scope.Search = function() {
+	$scope.Search = function(page) {
 		var req;
 		if ($scope.query) {
 			req = $http({
 				method: "GET",
 				url: "/api/borrower/search",
-				params: {"q": $scope.query, "page": $scope.page}
+				params: {"q": $scope.query, "page": page}
 			});
 		} else {
 			req = $http({
 				method: "GET",
 				url: "/api/borrower/list",
-				params: {"page": $scope.page}
+				params: {"page": page}
 			});
 		}
 		req.success(function(data, status){
 			$scope.borrowers = data.Borrowers;
-			$scope.page = data.Page;
-			$scope.pages = range(1, data.NumPage+1);
+			$scope.currentPage = data.Page;
+			$scope.numResults = data.NumResults;
 			$scope.error = "";
 		}).error(function(data, status){
 			$scope.borrowers = [];
-			$scope.page = 1;
-			$scope.pages = [];
+			$scope.currentPage = 1;
+			$scope.numResults = 0;
 			$scope.error = data;
 		});
-	};
-	$scope.SetPage = function(page) {
-		$scope.page = page;
-		$scope.Search();
-	};
-	$scope.NextPage = function() {
-		if ($scope.page < $scope.pages.length) {
-			$scope.page++;
-			$scope.Search();
-		}
-	};
-	$scope.PrevPage = function() {
-		if ($scope.page > 1) {
-			$scope.page--;
-			$scope.Search();
-		}
 	};
 }]);
 

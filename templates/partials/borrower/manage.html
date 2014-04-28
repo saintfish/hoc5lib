@@ -35,9 +35,5 @@
       [[error]]
     </div>
   </div>
-  <ul class="pagination">
-    <li ng-class="page > 1 ? '' : 'disabled'"><a href="" ng-click="PrevPage()">&laquo;</a></li>
-    <li ng-repeat="p in pages" ng-class="p == page ? 'active' : ''"><a href="" ng-click="SetPage(p)">[[p]]</a></li>
-    <li ng-class="page < pages.length ? '' : 'disabled'"><a href="" ng-click="NextPage()">&raquo;</a></li>
-  </ul>
+  <pagination on-select-page="Search(page)" items-per-page="itemsPerPage" total-items="numResults" page="currentPage" class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;"></pagination>
 </div>

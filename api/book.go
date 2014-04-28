@@ -12,8 +12,8 @@ const (
 )
 
 type bookSearchResult struct {
-	NumPage, Page int
-	Books         []model.Book
+	NumResults, NumPage, Page int
+	Books                     []model.Book
 }
 
 func BookSearch(ctx *web.Context) {
@@ -40,9 +40,10 @@ func BookSearch(ctx *web.Context) {
 		return
 	}
 	webutil.Json(ctx, bookSearchResult{
-		NumPage: numPage,
-		Page:    page,
-		Books:   books,
+		NumResults: numResults,
+		NumPage:    numPage,
+		Page:       page,
+		Books:      books,
 	})
 }
 
@@ -69,9 +70,10 @@ func BookList(ctx *web.Context) {
 		return
 	}
 	webutil.Json(ctx, bookSearchResult{
-		NumPage: numPage,
-		Page:    page,
-		Books:   books,
+		NumResults: numResults,
+		NumPage:    numPage,
+		Page:       page,
+		Books:      books,
 	})
 	return
 }
