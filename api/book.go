@@ -11,6 +11,44 @@ const (
 	numBooksPerPage = 10
 )
 
+func BookGet(ctx *web.Context, barcode string) {
+	book, err := model.GetBook(barcode)
+	if err != nil {
+		webutil.Error(ctx, err)
+		return
+	}
+	webutil.Json(ctx, struct {
+		Book *model.Book
+	}{book})
+}
+
+func BookUpdate(ctx *web.Context, barcode string) {
+	newValue := &model.Book{}
+	err := webutil.ReadJson(ctx, newValue)
+	if err != nil {
+		webutil.Error(ctx, err)
+		return
+	}
+	err = model.IsBookValid(newValue)
+	if err != nil {
+		webutil.Error(ctx, err)
+		return
+	}
+	origValue, err := model.GetBook(barcode)
+	if err != nil {
+		webutil.Error(ctx, err)
+		return
+	}
+	err = model.UpdateBook(origValue, newValue)
+	if err != nil {
+		webutil.Error(ctx, err)
+		return
+	}
+	webutil.Json(ctx, origValue)
+	return
+
+}
+
 type bookSearchResult struct {
 	NumResults, NumPage, Page int
 	Books                     []model.Book

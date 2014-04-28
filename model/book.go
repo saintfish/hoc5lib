@@ -36,6 +36,16 @@ func isBarcodeValid(barcode string) bool {
 	return bookBarcodePattern.MatchString(barcode)
 }
 
+func IsBookValid(book *Book) error {
+	if !isBarcodeValid(book.Barcode) {
+		return errors.New("Invalid barcode.")
+	}
+	if len(book.Title) == 0 {
+		return errors.New("Empty title.")
+	}
+	return nil
+}
+
 func GetBook(barcode string) (*Book, error) {
 	if !isBarcodeValid(barcode) {
 		return nil, errors.New("Invalid barcode.")
@@ -50,6 +60,29 @@ func GetBook(barcode string) (*Book, error) {
 		return nil, errors.New("Book not found.")
 	}
 	return &b, nil
+}
+
+func UpdateBook(origValue, newValue *Book) error {
+	if newValue.Barcode != origValue.Barcode {
+		b, _ := GetBook(newValue.Barcode)
+		if b != nil {
+			return errors.New("Barcode is used.")
+		}
+	}
+	origValue.Title = newValue.Title
+	origValue.Authors = newValue.Authors
+	origValue.PublishDate = newValue.PublishDate
+	origValue.TypeCode = newValue.TypeCode
+	err := IsBookValid(origValue)
+	if err != nil {
+		return err
+	}
+	o := orm.New(db)
+	err = o.UpdateByPrimaryKey(origValue)
+	if err != nil {
+		return errors.New("Error in updating book")
+	}
+	return nil
 }
 
 func SearchBooksCount(query string) (int, error) {

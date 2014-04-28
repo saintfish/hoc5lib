@@ -1,0 +1,41 @@
+<form ng-show="book" class="form-horizontal" name="editForm">
+  <div class="form-group">
+    <label for="barcode" class="col-sm-2 control-label">Barcode:</label>
+    <div class="col-sm-10" ng-class="{ 'has-error': editForm.barcode.$invalid }">
+      <input ng-model="book.Barcode" ng-pattern="/^[0-9]{13}$/" required name="barcode" id="barcode" type="text" class="form-control"/>
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="title" class="col-sm-2 control-label">Title:</label>
+    <div class="col-sm-10">
+      <input ng-model="book.Title" type="text" id="title" class="form-control"/>
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="authors" class="col-sm-2 control-label">Authors:</label>
+    <div class="col-sm-10">
+      <input ng-model="book.Authors" type="text" id="authors" class="form-control"/>
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="pub-month" class="col-sm-2 control-label">Publish Date:</label>
+    <div class="col-sm-1" ng-class="{ 'has-error': editForm.pubMonth.$invalid }">
+      <input ng-model="pubMonth" ng-change="UpdatePubDate()" ui-validate="{pubDate: 'ValidatePubDate($value, pubYear)' }" ui-validate-watch=" 'pubYear' "
+      name="pubMonth" type="text" id="pub-month" class="form-control" placeholder="month" />
+    </div>
+    <div class="col-sm-2" ng-class="{ 'has-error': editForm.pubYear.$invalid }">
+      <input ng-model="pubYear" ng-change="UpdatePubDate()" ui-validate="{pubDate: 'ValidatePubDate(pubMonth, $value)'}" ui-validate-watch=" 'pubMonth' "
+      name="pubYear" type="text" id="pub-year" class="form-control" placeholder="year" />
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="type-code" class="col-sm-2 control-label">Type code:</label>
+    <div class="col-sm-10">
+      <input ng-model="book.TypeCode" type="text" id="type-code" class="form-control"/>
+    </div>
+  </div>
+  <div class="button-toolbar">
+    <button ng-click="Submit()" ng-disabled="editForm.$invalid" class="btn btn-primary">Submit</button>
+    <button ng-click="Reset()" class="btn btn-default">Reset</button>
+  </div>
+</form>
