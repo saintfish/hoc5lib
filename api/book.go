@@ -22,6 +22,27 @@ func BookGet(ctx *web.Context, barcode string) {
 	}{book})
 }
 
+func BookAdd(ctx *web.Context) {
+	book := &model.Book{}
+	err := webutil.ReadJson(ctx, book)
+	if err != nil {
+		webutil.Error(ctx, err)
+		return
+	}
+	err = model.IsBookValid(book)
+	if err != nil {
+		webutil.Error(ctx, err)
+		return
+	}
+	err = model.AddBook(book)
+	if err != nil {
+		webutil.Error(ctx, err)
+		return
+	}
+	webutil.Json(ctx, book)
+	return
+}
+
 func BookUpdate(ctx *web.Context, barcode string) {
 	newValue := &model.Book{}
 	err := webutil.ReadJson(ctx, newValue)

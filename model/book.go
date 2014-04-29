@@ -62,6 +62,26 @@ func GetBook(barcode string) (*Book, error) {
 	return &b, nil
 }
 
+func AddBook(book *Book) error {
+	err := IsBookValid(book)
+	if err != nil {
+		return err
+	}
+	book.Id = 0
+	book.Availability = true
+	book.AvailableAfter = nil
+	b, _ := GetBook(book.Barcode)
+	if b != nil {
+		return errors.New("Barcode is used.")
+	}
+	o := orm.New(db)
+	err = o.Insert(book)
+	if err != nil {
+		return errors.New("Error in adding book")
+	}
+	return nil
+}
+
 func UpdateBook(origValue, newValue *Book) error {
 	if newValue.Barcode != origValue.Barcode {
 		b, _ := GetBook(newValue.Barcode)
