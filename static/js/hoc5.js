@@ -299,7 +299,6 @@ hoc5App.controller('BorrowerEditCtrl', [
 		$scope.$parent.page.errors = [data];
 	});
 	$scope.ValidateName = function(chineseName, englishName) {
-		console.log(chineseName, englishName);
 		chineseName = chineseName || "";
 		englishName = englishName || "";
 		if (chineseName.length === 0 && englishName.length === 0) {
@@ -335,7 +334,6 @@ hoc5App.controller('BorrowerNewCtrl', [
 		title: "New Borrower"
 	};
 	$scope.ValidateName = function(chineseName, englishName) {
-		console.log(chineseName, englishName);
 		chineseName = chineseName || "";
 		englishName = englishName || "";
 		if (chineseName.length === 0 && englishName.length === 0) {
