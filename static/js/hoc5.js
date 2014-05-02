@@ -298,6 +298,15 @@ hoc5App.controller('BorrowerEditCtrl', [
 	}).error(function(data, status){
 		$scope.$parent.page.errors = [data];
 	});
+	$scope.ValidateName = function(chineseName, englishName) {
+		console.log(chineseName, englishName);
+		chineseName = chineseName || "";
+		englishName = englishName || "";
+		if (chineseName.length === 0 && englishName.length === 0) {
+			return false;
+		}
+		return true;
+	};
 	$scope.Reset = function() {
 		$scope.borrower = angular.copy($scope.orignal);
 	};
@@ -324,6 +333,15 @@ hoc5App.controller('BorrowerNewCtrl', [
 	'$scope', '$http', '$location', function($scope, $http, $location){
 	$scope.$parent.page = {
 		title: "New Borrower"
+	};
+	$scope.ValidateName = function(chineseName, englishName) {
+		console.log(chineseName, englishName);
+		chineseName = chineseName || "";
+		englishName = englishName || "";
+		if (chineseName.length === 0 && englishName.length === 0) {
+			return false;
+		}
+		return true;
 	};
 	$scope.borrower = {};
 	$scope.Reset = function() {
