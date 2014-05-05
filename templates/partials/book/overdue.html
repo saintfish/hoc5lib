@@ -1,0 +1,27 @@
+<table class="table table-hover">
+	<thead>
+		<tr>
+			<th colspan="2">Borrower</th>
+			<th colspan="2">Book</th>
+			<th colspan="2">Due</th>
+		</tr>
+		<tr>
+			<th>Name</th>
+			<th>Phone</th>
+			<th>Title</th>
+			<th>Barcode</th>
+			<th>Borrow Date</th>
+			<th>Days</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr ng-repeat="e in entry">
+			<td>[[e.Borrower.ChineseName || e.Borrower.EnglishName]]</td>
+			<td>[[e.Borrower.Phone]]</td>
+			<td>[[e.Book.Title]]</td>
+			<td>[[e.Book.Barcode]]</td>
+			<td>[[e.BorrowDate | date:'MM-dd-yyyy']]</td>
+			<td>[[e.BorrowDays]] days</td>
+		</tr>
+	</tbody>
+</table>

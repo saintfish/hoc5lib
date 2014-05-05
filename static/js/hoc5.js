@@ -36,6 +36,10 @@ hoc5App.config(["$routeProvider", function($routeProvider) {
 			templateUrl: "partials/book/edit.html",
 			controller: "BookEditCtrl"
 		}).
+		when("/book/overdue", {
+			templateUrl: "partials/book/overdue.html",
+			controller: "BookOverdueCtrl"
+		}).
 		when("/borrower/manage", {
 			templateUrl: "partials/borrower/manage.html",
 			controller: "BorrowerManageCtrl"
@@ -497,4 +501,19 @@ hoc5App.controller('BookNewCtrl', [
 			$scope.book.PublishDate = d;
 		}
 	};
+}]);
+
+hoc5App.controller('BookOverdueCtrl', [
+	'$scope', '$http', function($scope, $http){
+	$scope.$parent.page = {
+		title: "Overdue Books"
+	};
+	$http({
+		method: "GET",
+		url: "/api/book/overdue"
+	}).success(function(data, status){
+		$scope.entry = data.Entry;
+	}).error(function(data, status){
+		$scope.$parent.page.errors = [data];
+	});
 }]);

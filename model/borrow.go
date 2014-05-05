@@ -144,3 +144,18 @@ func ReturnBook(borrower *Borrower, book *Book) (*BorrowEntry, error) {
 	}
 	return &entry, nil
 }
+
+func ListOverdue() ([]BorrowEntry, error) {
+	var result []BorrowEntry
+	now := time.Now()
+	cutoff := now.AddDate(0, 0, -MaxDaysBorrowPeriod)
+	o := orm.New(db)
+	err := o.Select().
+		Where("ReturnDate IS NULL AND BorrowDate < ?", cutoff).
+		Order("BorrowDate ASC").
+		FindAll(&result)
+	if err != nil {
+		return nil, errors.New("Error in finding the borrow records")
+	}
+	return result, nil
+}

@@ -162,3 +162,13 @@ func ListBorrowers(limit, offset int) ([]Borrower, error) {
 	}
 	return borrowers, nil
 }
+
+func GetBorrowerById(id int) (*Borrower, error) {
+	borrower := &Borrower{Id: id}
+	o := orm.New(db)
+	err := o.FindByPrimaryKey(borrower)
+	if err != nil {
+		return nil, errors.New("Error in finding borrower")
+	}
+	return borrower, nil
+}

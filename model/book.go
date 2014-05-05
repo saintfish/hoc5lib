@@ -166,3 +166,13 @@ func ListBooks(limit, offset int) ([]Book, error) {
 	}
 	return books, nil
 }
+
+func GetBookById(id int) (*Book, error) {
+	book := &Book{Id: id}
+	o := orm.New(db)
+	err := o.FindByPrimaryKey(book)
+	if err != nil {
+		return nil, errors.New("Error in finding book")
+	}
+	return book, nil
+}

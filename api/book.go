@@ -5,6 +5,7 @@ import (
 	"github.com/saintfish/hoc5lib/model"
 	"github.com/saintfish/webutil"
 	"strconv"
+	"time"
 )
 
 const (
@@ -134,5 +135,47 @@ func BookList(ctx *web.Context) {
 		Page:       page,
 		Books:      books,
 	})
+	return
+}
+
+type overdueResultEntry struct {
+	Borrower   *model.Borrower
+	Book       *model.Book
+	BorrowDate time.Time
+	BorrowDays int
+}
+type overdueResult struct {
+	Entry []overdueResultEntry
+}
+
+func BookOverdueList(ctx *web.Context) {
+	records, err := model.ListOverdue()
+	if err != nil {
+		webutil.Error(ctx, err)
+		return
+	}
+	result := []overdueResultEntry{}
+	now := time.Now()
+	for _, r := range records {
+		book, err := model.GetBookById(r.BookId)
+		if err != nil {
+			webutil.Error(ctx, err)
+			return
+		}
+		borrower, err := model.GetBorrowerById(r.BorrowerId)
+		if err != nil {
+			webutil.Error(ctx, err)
+			return
+		}
+		borrowDays := int(now.Sub(r.BorrowDate) / (24 * time.Hour))
+		entry := overdueResultEntry{
+			Book:       book,
+			Borrower:   borrower,
+			BorrowDate: r.BorrowDate,
+			BorrowDays: borrowDays,
+		}
+		result = append(result, entry)
+	}
+	webutil.Json(ctx, overdueResult{result})
 	return
 }
