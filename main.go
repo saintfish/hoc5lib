@@ -50,6 +50,7 @@ func main() {
 	}
 
 	web.Get("/logout", func(ctx *web.Context) {
+		DisableCache(ctx)
 		webutil.Logout(libAuth, ctx)
 		webutil.ExecuteTemplateWithContext(ctx, "logout.html", nil)
 	})
