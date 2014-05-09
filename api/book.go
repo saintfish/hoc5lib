@@ -23,6 +23,15 @@ func BookGet(ctx *web.Context, barcode string) {
 	}{book})
 }
 
+func BookRange(ctx *web.Context, start, end string) {
+	books, err := model.RangeBook(start, end)
+	if err != nil {
+		webutil.Error(ctx, err)
+		return
+	}
+	webutil.Json(ctx, books)
+}
+
 func BookAdd(ctx *web.Context) {
 	book := &model.Book{}
 	err := webutil.ReadJson(ctx, book)

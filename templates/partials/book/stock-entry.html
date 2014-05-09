@@ -1,0 +1,52 @@
+<form class="form-inline" name="stockForm" ng-submit="AddStock(barcode)">
+	<div class="form-group" ng-class="{ 'has-error': stockForm.barcode.$invalid }">
+		<label class="sr-only" for="barcode">Barcode</label>
+		<input ng-model="barcode" ng-pattern="/^[0-9]{13}$/" required ui-validate="{ unseen: 'ValidateBarcode($value)' }" type="text" name="barcode" id="barcode" placeholder="Barcode" class="form-control"/>
+	</div>
+	<button type="submit" ng-disabled="stockForm.$invalid" class="btn btn-primary">Add Stock</button>
+</form>
+<div>
+	<h2>Uncategorized ([[books.uncategorized.length]] books)</h2>
+	<div class="list-group" style="max-height:200px; overflow:auto;">
+		<div class="list-group-item" ng-repeat="book in books.uncategorized">
+			<span class="list-group-item-heading">
+			<span class="text-big">[[book.Barcode]] - [[book.Title]]</span>
+			</span>
+			<span class="list-group-item-text">
+			<span class="author" ng-if="book.Authors">by [[book.Authors]]</span>
+			<span class="label label-success" ng-if="book.Availability">Available</span>
+			<span class="label label-warning" ng-if="!book.Availability">Unavailable</span>
+			</span>
+		</div>
+	</div>
+</div>
+<div>
+	<h2>In Stock ([[books.stock.length]] books)</h2>
+	<div class="list-group" style="max-height:200px; overflow:auto;">
+		<div class="list-group-item" ng-repeat="book in books.stock">
+			<span class="list-group-item-heading">
+			<span class="text-big">[[book.Barcode]] - [[book.Title]]</span>
+			</span>
+			<span class="list-group-item-text">
+			<span class="author" ng-if="book.Authors">by [[book.Authors]]</span>
+			<span class="label label-success" ng-if="book.Availability">Available</span>
+			<span class="label label-warning" ng-if="!book.Availability">Unavailable</span>
+			</span>
+		</div>
+	</div>
+</div>
+<div>
+	<h2>Borrowed ([[books.borrowed.length]] books)</h2>
+	<div class="list-group" style="max-height:200px; overflow:auto;">
+		<div class="list-group-item" ng-repeat="book in books.borrowed">
+			<span class="list-group-item-heading">
+			<span class="text-big">[[book.Barcode]] - [[book.Title]]</span>
+			</span>
+			<span class="list-group-item-text">
+			<span class="author" ng-if="book.Authors">by [[book.Authors]]</span>
+			<span class="label label-success" ng-if="book.Availability">Available</span>
+			<span class="label label-warning" ng-if="!book.Availability">Unavailable</span>
+			</span>
+		</div>
+	</div>
+</div>

@@ -62,6 +62,22 @@ func GetBook(barcode string) (*Book, error) {
 	return &b, nil
 }
 
+func RangeBook(start, end string) ([]Book, error) {
+	if !isBarcodeValid(start) || !isBarcodeValid(end) {
+		return nil, errors.New("Invalid barcode.")
+	}
+	result := []Book{}
+	o := orm.New(db)
+	err := o.Select().
+		Where("Barcode >= ? AND Barcode <= ?", start, end).
+		Order("Barcode").
+		FindAll(&result)
+	if err != nil {
+		return nil, errors.New("Error in finding books.")
+	}
+	return result, nil
+}
+
 func AddBook(book *Book) error {
 	err := IsBookValid(book)
 	if err != nil {
