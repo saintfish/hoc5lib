@@ -18,7 +18,9 @@
 	<button ng-click="Print()" ng-disabled="!barcodes" class="btn btn-default">Print</button>
 </form>
 
-<h5 class="visible-print">[[input.count]] barcodes starting from [[input.start]]</h5>
+<h5 class="visible-print">
+	<u>[[input.count]]</u> barcodes starting from <u>[[input.start]]</u>
+</h5>
 <div class="row" ng:repeat="r in barcodes">
   <div class="col-xs-2" ng:repeat="b in r track by $index">
   	<div class="barcode hidden-print">
