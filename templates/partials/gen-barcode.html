@@ -1,0 +1,31 @@
+<style>
+.barcode {
+	display: block;
+	margin: 10px;
+}
+</style>
+<form name="inputForm" class="form-inline hidden-print" ng-submit="Generate()" >
+	 <div class="form-group" ng-class="{ 'has-error': inputForm.start.$invalid }">
+		<label for="start">Start Barcode:</label>
+		<input ng-pattern="/^[0-9]{12}$/" required name="start" id="start" class="form-control" type="text" ng-model="input.start"/>
+	</div>
+
+	<div class="form-group" ng-class="{ 'has-error': inputForm.count.$invalid }">
+		<label for="start">Count:</label>
+		<input ng-pattern="/^[0-9]+$/" required name="count" id="count" class="form-control" type="number" ng-model="input.count"/>
+	</div>
+	<button type="submit" ng-disabled="inputForm.$invalid" class="btn btn-primary">Generate</button>
+	<button ng-click="Print()" ng-disabled="!barcodes" class="btn btn-default">Print</button>
+</form>
+
+<h5 class="visible-print">[[input.count]] barcodes starting from [[input.start]]</h5>
+<div class="row" ng:repeat="r in barcodes">
+  <div class="col-xs-2" ng:repeat="b in r track by $index">
+  	<div class="barcode hidden-print">
+  		[[b]]
+  	</div>
+  	<div class="barcode">
+  		<img src="/barcode/[[b]]">
+  	</div>
+  </div>
+</div>

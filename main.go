@@ -73,6 +73,8 @@ func main() {
 	web.Post("/api/borrower/(\\d+)", RequireAuth1(libAuth, api.BorrowerUpdate))
 	web.Get("/api/book/overdue", RequireAuth(libAuth, api.BookOverdueList))
 	web.Get("/api/book/(\\d+)/(\\d+)", RequireAuth2(libAuth, api.BookRange))
+	web.Get("/barcode/(\\d+)", api.HandleEan13)
+	web.Get("/barcode/book/(\\d+)/(\\d+)", RequireAuth2(libAuth, api.HandleBookBarcodeRange))
 
-	web.Run("0.0.0.0:9000")
+	web.Run("127.0.0.1:9000")
 }

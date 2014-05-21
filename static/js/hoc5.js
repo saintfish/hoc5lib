@@ -68,6 +68,10 @@ hoc5App.config(["$routeProvider", function($routeProvider) {
 			templateUrl: "partials/book/stock-entry.html",
 			controller: "BookStockEntryCtrl"
 		}).
+		when("/gen-barcode", {
+			templateUrl: "partials/gen-barcode.html",
+			controller: "GenBarcodeCtrl"
+		}).
 		otherwise({
 			redirectTo: "/menu"
 		});
@@ -642,5 +646,39 @@ hoc5App.controller('BookStockEntryCtrl', [
 				return;
 			}
 		}
+	};
+}]);
+
+hoc5App.controller('GenBarcodeCtrl', ['$scope', '$http', function($scope, $http){
+	$scope.$parent.page = {};
+
+	$scope.input = {
+		start: "000000000000",
+		count: 72
+	};
+
+	var layoutBarcode = function(data, countPerRow) {
+		var result = [];		
+		for (var i = 0; i < data.length; i+=countPerRow) {
+			var row = [];
+			for (var j = i; j < data.length && j < i+countPerRow; j++) {
+				row.push(data[j]);
+			}
+			result.push(row);
+		}
+		return result;	
+	};
+	$scope.Generate = function() {
+		$http({
+			"method": "GET",
+			"url": "/barcode/book/" + $scope.input.start + "/" + $scope.input.count
+		}).success(function(data, status){
+			$scope.barcodes = layoutBarcode(data, 6);
+		}).error(function(data, status){
+			$scope.barcodes = null;
+		});
+	};
+	$scope.Print = function() {
+		window.print();
 	};
 }]);
