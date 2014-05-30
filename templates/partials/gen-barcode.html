@@ -1,7 +1,7 @@
 <style>
 .barcode {
 	display: block;
-	margin: 10px;
+	margin: 9px 15px;
 }
 </style>
 <form name="inputForm" class="form-inline hidden-print" ng-submit="Generate()" >
@@ -18,13 +18,13 @@
 	<button ng-click="Print()" ng-disabled="!barcodes" class="btn btn-default">Print</button>
 </form>
 
-<div class="row" ng-if="barcodes.length" ng-repeat="r in barcodes">
-  <div class="col-xs-2" ng-repeat="b in r track by $index">
-  	<div class="barcode hidden-print">
-  		[[b]]
-  	</div>
-  	<div class="barcode">
-  		<img ng-src="/barcode/[[b]]">
-  	</div>
-  </div>
-</div>
+<table style="width:100%">
+	<tr ng-if="barcodes.length" ng-repeat="r in barcodes">
+		<td ng-repeat="b in r track by $index">
+
+  			<div class="barcode">
+  				<img ng-src="/barcode/[[b]]">
+  			</div>
+		</td>
+	</tr>
+</table>
