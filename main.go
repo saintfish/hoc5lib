@@ -75,6 +75,7 @@ func main() {
 	web.Get("/api/book/(\\d+)/(\\d+)", RequireAuth2(libAuth, api.BookRange))
 	web.Get("/barcode/(\\d+)", api.HandleEan13)
 	web.Get("/barcode/book/(\\d+)/(\\d+)", RequireAuth2(libAuth, api.HandleBookBarcodeRange))
+	web.Get("/barcode/book/(\\d+)/(\\d+)\\.pdf", RequireAuth2(libAuth, api.HandleBookBarcodePDF))
 
 	web.Run("127.0.0.1:9000")
 }

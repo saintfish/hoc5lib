@@ -654,7 +654,7 @@ hoc5App.controller('GenBarcodeCtrl', ['$scope', '$http', function($scope, $http)
 
 	$scope.input = {
 		start: "000000000000",
-		count: 50
+		page: 1
 	};
 
 	var layoutBarcode = function(data, countPerRow) {
@@ -671,7 +671,7 @@ hoc5App.controller('GenBarcodeCtrl', ['$scope', '$http', function($scope, $http)
 	$scope.Generate = function() {
 		$http({
 			"method": "GET",
-			"url": "/barcode/book/" + $scope.input.start + "/" + $scope.input.count
+			"url": "/barcode/book/" + $scope.input.start + "/" + ($scope.input.page * 50)
 		}).success(function(data, status){
 			$scope.barcodes = layoutBarcode(data, 5);
 		}).error(function(data, status){
@@ -679,6 +679,6 @@ hoc5App.controller('GenBarcodeCtrl', ['$scope', '$http', function($scope, $http)
 		});
 	};
 	$scope.Print = function() {
-		window.print();
+		window.open("/barcode/book/" + $scope.input.start + "/" + $scope.input.page + ".pdf");
 	};
 }]);

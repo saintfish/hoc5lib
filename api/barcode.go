@@ -1,6 +1,7 @@
 package api
 
 import (
+	"bitbucket.org/saintfish/gopdf/pdf"
 	"errors"
 	"github.com/hoisie/web"
 	"github.com/saintfish/barcode"
@@ -103,4 +104,46 @@ func HandleBookBarcodeRange(ctx *web.Context, start string, count string) {
 	}
 	webutil.Json(ctx, r)
 	return
+}
+
+func HandleBookBarcodePDF(ctx *web.Context, start string, page string) {
+	const kNumBarcodePerPage = 50
+	p, err := strconv.ParseInt(page, 10, 32)
+	if err != nil {
+		webutil.Error(ctx, err)
+		return
+	}
+	r, err := barcodeRange(start, int32(p)*kNumBarcodePerPage, func(b string) bool {
+		book, err := model.GetBook(b)
+		return err == nil && book != nil
+	})
+	if err != nil {
+		webutil.Error(ctx, err)
+		return
+	}
+	doc := pdf.New()
+	for page := 0; page < int(p); page++ {
+		canvas := doc.NewPage(pdf.USLetterWidth, pdf.USLetterHeight)
+		canvas.Translate(0.5*pdf.Inch, 0.5*pdf.Inch)
+		bar := kNumBarcodePerPage * page
+		margin := 0.1 * pdf.Inch
+		for row := 9; row >= 0; row-- {
+			for col := 0; col < 5; col++ {
+				code, _ := barcode.NewEan13(r[bar])
+				img := code.Encode()
+				canvas.DrawImage(img, pdf.Rectangle{
+					pdf.Point{1.5*pdf.Unit(col)*pdf.Inch + margin, pdf.Unit(row)*pdf.Inch + margin},
+					pdf.Point{1.5*pdf.Unit(col+1)*pdf.Inch - margin, pdf.Unit(row+1)*pdf.Inch - margin},
+				})
+				bar++
+			}
+		}
+		canvas.Close()
+	}
+	ctx.ContentType("application/pdf")
+	err = doc.Encode(ctx)
+	if err != nil {
+		webutil.Error(ctx, err)
+		return
+	}
 }
