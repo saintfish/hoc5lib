@@ -9,6 +9,7 @@
 	width: 1.5in;
 }
 .barcode {
+	position: relative;
 	width: 1.25in;
 	height: 0.75in;
 	margin: auto;
@@ -17,6 +18,11 @@
 	width: 1.25in;
 	height: 0.75in;
 }
+.barcode .del {
+	position: absolute;
+	top: 0px;
+	right: 0px;
+}
 </style>
 <form name="inputForm" class="form-inline hidden-print" ng-submit="Generate()" >
 	 <div class="form-group" ng-class="{ 'has-error': inputForm.start.$invalid }">
@@ -24,19 +30,20 @@
 		<input ng-pattern="/^[0-9]{12}$/" required name="start" id="start" class="form-control" type="text" ng-model="input.start"/>
 	</div>
 
-	<div class="form-group" ng-class="{ 'has-error': inputForm.page.$invalid }">
-		<label for="page">Page:</label>
-		<input ng-pattern="/^[0-9]+$/" required name="page" id="page" class="form-control" type="number" ng-model="input.page"/>
+	<div class="form-group" ng-class="{ 'has-error': inputForm.count.$invalid }">
+		<label for="count">count:</label>
+		<input ng-pattern="/^[0-9]+$/" required name="count" id="count" class="form-control" type="number" ng-model="input.count"/>
 	</div>
-	<button type="submit" ng-disabled="inputForm.$invalid" class="btn btn-primary">Generate</button>
+	<button type="submit" ng-disabled="inputForm.$invalid" class="btn btn-primary">Add</button>
 	<button type='button' ng-click="Print()" ng-disabled="!barcodes" class="btn btn-default">Print</button>
 </form>
 
 <table class="barcode-table">
-	<tr ng-if="barcodes.length" ng-repeat="r in barcodes" class="barcode-row">
+	<tr ng-if="barcodes.length" ng-repeat="r in layout" class="barcode-row">
 		<td ng-repeat="b in r track by $index" class="barcode-col">
   			<div class="barcode">
   				<img ng-src="/barcode/[[b]]">
+  				<span class="del glyphicon glyphicon-remove-sign" ng-click="Remove($index)"></span>
   			</div>
 		</td>
 	</tr>

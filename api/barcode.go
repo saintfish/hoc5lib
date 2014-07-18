@@ -11,6 +11,7 @@ import (
 	"net/http"
 	"regexp"
 	"strconv"
+	"strings"
 )
 
 func HandleEan13(ctx *web.Context, code string) {
@@ -106,42 +107,41 @@ func HandleBookBarcodeRange(ctx *web.Context, start string, count string) {
 	return
 }
 
-func HandleBookBarcodePDF(ctx *web.Context, start string, page string) {
+func HandleBookBarcodePDF(ctx *web.Context) {
 	const kNumBarcodePerPage = 50
-	p, err := strconv.ParseInt(page, 10, 32)
-	if err != nil {
-		webutil.Error(ctx, err)
-		return
-	}
-	r, err := barcodeRange(start, int32(p)*kNumBarcodePerPage, func(b string) bool {
-		book, err := model.GetBook(b)
-		return err == nil && book != nil
-	})
-	if err != nil {
-		webutil.Error(ctx, err)
-		return
+	r := strings.Split(ctx.Params["barcodes"], ",")
+	for _, code := range r {
+		_, err := barcode.NewEan13(code)
+		if err != nil {
+			webutil.Error(ctx, err)
+			return
+		}
 	}
 	doc := pdf.New()
-	for page := 0; page < int(p); page++ {
-		canvas := doc.NewPage(pdf.USLetterWidth, pdf.USLetterHeight)
-		canvas.Translate(0.5*pdf.Inch, 0.5*pdf.Inch)
-		bar := kNumBarcodePerPage * page
-		margin := 0.1 * pdf.Inch
-		for row := 9; row >= 0; row-- {
-			for col := 0; col < 5; col++ {
-				code, _ := barcode.NewEan13(r[bar])
-				img := code.Encode()
-				canvas.DrawImage(img, pdf.Rectangle{
-					pdf.Point{1.5*pdf.Unit(col)*pdf.Inch + margin, pdf.Unit(row)*pdf.Inch + margin},
-					pdf.Point{1.5*pdf.Unit(col+1)*pdf.Inch - margin, pdf.Unit(row+1)*pdf.Inch - margin},
-				})
-				bar++
+	var canvas *pdf.Canvas
+	for i := range r {
+		if i%kNumBarcodePerPage == 0 {
+			if canvas != nil {
+				canvas.Close()
 			}
+			canvas = doc.NewPage(pdf.USLetterWidth, pdf.USLetterHeight)
+			canvas.Translate(0.5*pdf.Inch, 0.5*pdf.Inch)
 		}
+		row := 9 - (i%kNumBarcodePerPage)/5
+		col := (i % kNumBarcodePerPage) % 5
+		code, _ := barcode.NewEan13(r[i])
+		img := code.Encode()
+		margin := 0.1 * pdf.Inch
+		canvas.DrawImage(img, pdf.Rectangle{
+			pdf.Point{1.5*pdf.Unit(col)*pdf.Inch + margin, pdf.Unit(row)*pdf.Inch + margin},
+			pdf.Point{1.5*pdf.Unit(col+1)*pdf.Inch - margin, pdf.Unit(row+1)*pdf.Inch - margin},
+		})
+	}
+	if canvas != nil {
 		canvas.Close()
 	}
 	ctx.ContentType("application/pdf")
-	err = doc.Encode(ctx)
+	err := doc.Encode(ctx)
 	if err != nil {
 		webutil.Error(ctx, err)
 		return
