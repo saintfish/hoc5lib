@@ -125,22 +125,12 @@ func HandleBookBarcodePDF(ctx *web.Context) {
 			}
 			canvas = doc.NewPage(pdf.USLetterWidth, pdf.USLetterHeight)
 			canvas.Translate(0.5*pdf.Inch, 0.5*pdf.Inch)
-			for i := 0; i <= 5; i++ {
-				canvas.DrawLine(
-					pdf.Point{1.5 * pdf.Unit(i) * pdf.Inch, 0},
-					pdf.Point{1.5 * pdf.Unit(i) * pdf.Inch, 10 * pdf.Inch})
-			}
-			for i := 0; i <= 10; i++ {
-				canvas.DrawLine(
-					pdf.Point{0, pdf.Unit(i) * pdf.Inch},
-					pdf.Point{7.5 * pdf.Inch, pdf.Unit(i) * pdf.Inch})
-			}
 		}
 		row := 9 - (i%kNumBarcodePerPage)/5
 		col := (i % kNumBarcodePerPage) % 5
 		code, _ := barcode.NewEan13(r[i])
 		img := code.Encode()
-		margin := 0.1 * pdf.Inch
+		margin := 0.15 * pdf.Inch
 		canvas.DrawImage(img, pdf.Rectangle{
 			pdf.Point{1.5*pdf.Unit(col)*pdf.Inch + margin, pdf.Unit(row)*pdf.Inch + margin},
 			pdf.Point{1.5*pdf.Unit(col+1)*pdf.Inch - margin, pdf.Unit(row+1)*pdf.Inch - margin},
