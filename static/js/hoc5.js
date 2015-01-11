@@ -682,7 +682,8 @@ hoc5App.controller('GenBarcodeCtrl', ['$scope', '$http', function($scope, $http)
 
 	var initInput = {
 		start: "000000000000",
-		count: 0
+		count: 0,
+		step: 10
 	};
 	$scope.input = initInput;
 
@@ -701,7 +702,7 @@ hoc5App.controller('GenBarcodeCtrl', ['$scope', '$http', function($scope, $http)
 	$scope.Generate = function() {
 		$http({
 			"method": "GET",
-			"url": "/barcode/book/" + $scope.input.start + "/" + $scope.input.count
+			"url": "/barcode/book/" + $scope.input.start + "/" + $scope.input.count + "/" + $scope.input.step
 		}).success(function(data, status){
 			$scope.barcodes = $scope.barcodes || [];
 			$.merge($scope.barcodes, data);

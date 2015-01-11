@@ -34,6 +34,10 @@
 		<label for="count">count:</label>
 		<input ng-pattern="/^[0-9]+$/" required name="count" id="count" class="form-control" type="number" ng-model="input.count"/>
 	</div>
+	<div class="form-group" ng-class="{ 'has-error': inputForm.step.$invalid }">
+		<label for="step">step:</label>
+		<input ng-pattern="/^[0-9]+$/" required name="step" id="step" class="form-control" type="number" ng-model="input.step"/>
+	</div>
 	<button type="submit" ng-disabled="inputForm.$invalid" class="btn btn-primary">Add</button>
 	<button type='button' ng-click="Print()" ng-disabled="!barcodes" class="btn btn-default">Print</button>
 </form>

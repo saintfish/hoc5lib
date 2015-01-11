@@ -3,6 +3,7 @@ package api
 import (
 	"bitbucket.org/saintfish/gopdf/pdf"
 	"errors"
+	"fmt"
 	"github.com/hoisie/web"
 	"github.com/saintfish/barcode"
 	"github.com/saintfish/hoc5lib/model"
@@ -36,7 +37,7 @@ func HandleEan13(ctx *web.Context, code string) {
 
 var barcodePattern = regexp.MustCompile("^[0-9]{12}$")
 
-func barcodeRange(start string, count int32, filter func(string) bool) ([]string, error) {
+func barcodeRange(start string, count, step int32, filter func(string) bool) ([]string, error) {
 	if len(start) != 12 || !barcodePattern.MatchString(start) {
 		return nil, errors.New("Invalid start barcode. Should be 12-digit number.")
 	}
@@ -62,40 +63,38 @@ func barcodeRange(start string, count int32, filter func(string) bool) ([]string
 			if !filter(code.String()) {
 				break
 			}
-			curr = increment(curr)
+			curr = increment(curr, step)
 			if len(curr) >= 13 {
 				return result, nil
 			}
 		}
 		result = append(result, code.String())
-		curr = increment(curr)
+		curr = increment(curr, step)
 	}
 	return result, nil
 }
 
-func increment(s string) string {
-	b := []byte(s)
-	for i := len(b) - 1; i >= 0; i-- {
-		if b[i] < '0' && b[i] > '9' {
-			panic("Invalid input")
-		}
-		if b[i] < '9' {
-			b[i]++
-			return string(b)
-		} else {
-			b[i] = '0'
-		}
+func increment(s string, step int32) string {
+	i, err := strconv.ParseInt(s, 10, 64)
+	if err != nil {
+		panic("Invalid input")
 	}
-	return "1" + string(b)
+	i += int64(step)
+	return fmt.Sprintf("%012d", i)
 }
 
-func HandleBookBarcodeRange(ctx *web.Context, start string, count string) {
+func HandleBookBarcodeRange(ctx *web.Context, start string, count string, step string) {
 	c, err := strconv.ParseInt(count, 10, 32)
 	if err != nil {
 		webutil.Error(ctx, err)
 		return
 	}
-	r, err := barcodeRange(start, int32(c), func(b string) bool {
+	s, err := strconv.ParseInt(step, 10, 32)
+	if err != nil {
+		webutil.Error(ctx, err)
+		return
+	}
+	r, err := barcodeRange(start, int32(c), int32(s), func(b string) bool {
 		book, err := model.GetBook(b)
 		return err == nil && book != nil
 	})
@@ -126,6 +125,16 @@ func HandleBookBarcodePDF(ctx *web.Context) {
 			}
 			canvas = doc.NewPage(pdf.USLetterWidth, pdf.USLetterHeight)
 			canvas.Translate(0.5*pdf.Inch, 0.5*pdf.Inch)
+			for i := 0; i <= 5; i++ {
+				canvas.DrawLine(
+					pdf.Point{1.5 * pdf.Unit(i) * pdf.Inch, 0},
+					pdf.Point{1.5 * pdf.Unit(i) * pdf.Inch, 10 * pdf.Inch})
+			}
+			for i := 0; i <= 10; i++ {
+				canvas.DrawLine(
+					pdf.Point{0, pdf.Unit(i) * pdf.Inch},
+					pdf.Point{7.5 * pdf.Inch, pdf.Unit(i) * pdf.Inch})
+			}
 		}
 		row := 9 - (i%kNumBarcodePerPage)/5
 		col := (i % kNumBarcodePerPage) % 5

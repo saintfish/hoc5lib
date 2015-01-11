@@ -43,6 +43,16 @@ func RequireAuth2(d *webutil.Digest, f func(*web.Context, string, string)) func(
 	}
 }
 
+func RequireAuth3(d *webutil.Digest, f func(*web.Context, string, string, string)) func(*web.Context, string, string, string) {
+	return func(ctx *web.Context, arg1, arg2, arg3 string) {
+		DisableCache(ctx)
+		if !webutil.HandleAuth(d, ctx) {
+			return
+		}
+		f(ctx, arg1, arg2, arg3)
+	}
+}
+
 func main() {
 	libAuth, err := webutil.NewDigest("hoclib", "htdigest", 10*time.Minute)
 	if err != nil {
@@ -74,7 +84,7 @@ func main() {
 	web.Get("/api/book/overdue", RequireAuth(libAuth, api.BookOverdueList))
 	web.Get("/api/book/(\\d+)/(\\d+)", RequireAuth2(libAuth, api.BookRange))
 	web.Get("/barcode/(\\d+)", api.HandleEan13)
-	web.Get("/barcode/book/(\\d+)/(\\d+)", RequireAuth2(libAuth, api.HandleBookBarcodeRange))
+	web.Get("/barcode/book/(\\d+)/(\\d+)/(\\d+)", RequireAuth3(libAuth, api.HandleBookBarcodeRange))
 	web.Post("/barcode/book/print.pdf", RequireAuth(libAuth, api.HandleBookBarcodePDF))
 
 	web.Run("127.0.0.1:9000")
