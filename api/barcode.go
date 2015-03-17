@@ -8,6 +8,7 @@ import (
 	"github.com/saintfish/barcode"
 	"github.com/saintfish/hoc5lib/model"
 	"github.com/saintfish/webutil"
+	"image"
 	"image/png"
 	"net/http"
 	"regexp"
@@ -16,7 +17,7 @@ import (
 )
 
 func HandleEan13(ctx *web.Context, code string) {
-	ean13, err := barcode.NewEan13(code)
+	ean13, err := barcode.EAN13FromString(code)
 	if err != nil {
 		webutil.Error(ctx, err)
 		return
@@ -25,7 +26,12 @@ func HandleEan13(ctx *web.Context, code string) {
 		ctx.Redirect(http.StatusMovedPermanently, ean13.String())
 		return
 	}
-	img := ean13.Encode()
+	img := image.NewNRGBA(image.Rect(0, 0, 400, 200))
+	err = ean13.RenderImage(img, img.Bounds(), 10)
+	if err != nil {
+		webutil.Error(ctx, err)
+		return
+	}
 	ctx.ContentType("image/png")
 	err = png.Encode(ctx, img)
 	if err != nil {
@@ -53,10 +59,10 @@ func barcodeRange(start string, count, step int32, filter func(string) bool) ([]
 	result := []string{}
 	curr := start
 	for i := 0; i < int(count); i++ {
-		var code barcode.Barcode
+		var code barcode.EAN13
 		var err error
 		for {
-			code, err = barcode.NewEan13(curr)
+			code, err = barcode.EAN13FromString12(curr)
 			if err != nil {
 				return nil, err
 			}
@@ -110,13 +116,15 @@ func HandleBookBarcodePDF(ctx *web.Context) {
 	const kNumBarcodePerPage = 50
 	r := strings.Split(ctx.Params["barcodes"], ",")
 	for _, code := range r {
-		_, err := barcode.NewEan13(code)
+		_, err := barcode.EAN13FromString13(code)
 		if err != nil {
 			webutil.Error(ctx, err)
 			return
 		}
 	}
 	doc := pdf.New()
+	doc.SetPrintScaling(pdf.PrintScalingNone)
+	doc.SetDuplex(pdf.Simplex)
 	var canvas *pdf.Canvas
 	for i := range r {
 		if i%kNumBarcodePerPage == 0 {
@@ -128,17 +136,18 @@ func HandleBookBarcodePDF(ctx *web.Context) {
 		}
 		row := 9 - (i%kNumBarcodePerPage)/5
 		col := (i % kNumBarcodePerPage) % 5
-		code, _ := barcode.NewEan13(r[i])
-		img := code.Encode()
-		margin := 0.15 * pdf.Inch
-		canvas.DrawImage(img, pdf.Rectangle{
-			pdf.Point{1.5*pdf.Unit(col)*pdf.Inch + margin, pdf.Unit(row)*pdf.Inch + margin},
-			pdf.Point{1.5*pdf.Unit(col+1)*pdf.Inch - margin, pdf.Unit(row+1)*pdf.Inch - margin},
-		})
+		code, _ := barcode.EAN13FromString13(r[i])
+		margin := 0.12 * pdf.Inch
+		code.RenderPdf(canvas, pdf.Rectangle{
+			pdf.Point{1.5 * pdf.Unit(col) * pdf.Inch, pdf.Unit(row) * pdf.Inch},
+			pdf.Point{1.5 * pdf.Unit(col+1) * pdf.Inch, pdf.Unit(row+1) * pdf.Inch},
+		}, margin)
 	}
 	if canvas != nil {
 		canvas.Close()
 	}
+	// ctx.ContentType("application/octet-stream")
+	// ctx.SetHeader("content-disposition", fmt.Sprintf("attachment; filename='%s-%d.pdf'", r[0], len(r)), true)
 	ctx.ContentType("application/pdf")
 	err := doc.Encode(ctx)
 	if err != nil {
