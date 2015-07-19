@@ -1,6 +1,6 @@
 <div class="form-group" ng-controller="BorrowerSearchCtrl" ng-class="{true: 'has-success', false: 'has-error'}[IsPhoneValid()]">
 	<label for="borrower">Borrower:</label>
-	<input ng-model="query" ng-change="Search(); SetPhone('')" ng-focus="Search(); suggest.borrower = true" type="text" id="borrower" class="form-control"  autocomplete="off"/>
+	<input ng-model="query" ng-change="Search(); SetPhone('')" ng-focus="Search(); suggest.borrower = true" type="text" id="borrower" class="form-control" placeholder="Search by name or phone number and select from the list" autocomplete="off"/>
 	<div ng-show="borrowers &amp;&amp; suggest.borrower" class="list-group">
 		<div class="list-group-item" ng-repeat="borrower in borrowers">
 			<span class="list-group-item-heading">
@@ -16,7 +16,7 @@
 	</div>
 	<div class="form-group" ng-controller="BookSearchCtrl" ng-class="{true: 'has-success', false: 'has-error'}[IsBarcodeValid()]">
 		<label for="book">Book:</label>
-		<input ng-model="query" ng-change="Search(); SetBarcode('')" ng-focus="Search(); suggest.book = true" type="text" id="book" class="form-control" autocomplete="off"/>
+		<input ng-model="query" ng-change="Search(); SetBarcode('')" ng-focus="Search(); suggest.book = true" type="text" id="book" class="form-control" placeholder="Search by barcode, title, author or type code and select from the list" autocomplete="off"/>
 		<div ng-show="books &amp;&amp; suggest.book" class="list-group">
 			<div class="list-group-item" ng-repeat="book in books">
 				<span class="list-group-item-heading">

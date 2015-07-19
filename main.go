@@ -54,7 +54,7 @@ func RequireAuth3(d *webutil.Digest, f func(*web.Context, string, string, string
 }
 
 func main() {
-	libAuth, err := webutil.NewDigest("hoclib", "htdigest", 10*time.Minute)
+	libAuth, err := webutil.NewDigest("hoclib", "htdigest", 20*time.Minute)
 	if err != nil {
 		panic(err)
 	}

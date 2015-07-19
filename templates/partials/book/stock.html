@@ -2,14 +2,20 @@
 	<div class="form-group" ng-class="{ 'has-error': newForm.beginBarcode.$invalid }">
 		<label class="sr-only" for="beginBarcode">Begin</label>
 		<input ng-model="stock.begin" ng-pattern="/^[0-9]{13}$/" required ui-validate="{less: '$value < stock.end'}" ui-validate-watch=" 'stock.end' " type="text" name="beginBarcode" id="beginBarcode" placeholder="Begin Barcode" class="form-control"/>
+		<span class="help-block" ng-show="newForm.beginBarcode.$error.required">Begin barcode is required.</span>
+		<span class="help-block" ng-show="newForm.beginBarcode.$error.pattern">Begin barcode should be 13 digits.</span>
+		<span class="help-block" ng-show="newForm.beginBarcode.$error.less">Begin barcode should be less than end barcode.</span>
 	</div>
 	<div class="form-group" ng-class="{ 'has-error': newForm.endBarcode.$invalid }">
-		<label class="sr-only" for="endBarcode">Begin</label>
+		<label class="sr-only" for="endBarcode">End</label>
 		<input ng-model="stock.end" ng-pattern="/^[0-9]{13}$/" required ui-validate="{less: 'stock.begin < $value'}" ui-validate-watch=" 'stock.begin' " type="text" name="endBarcode" id="endBarcode" placeholder="End Barcode" class="form-control"/>
+		<span class="help-block" ng-show="newForm.endBarcode.$error.required">End barcode is required.</span>
+		<span class="help-block" ng-show="newForm.endBarcode.$error.pattern">End barcode should be 13 digits.</span>
+		<span class="help-block" ng-show="newForm.endBarcode.$error.less">End barcode should be greater than begin barcode.</span>
 	</div>
 	<button type="submit" ng-disabled="newForm.$invalid" class="btn btn-primary">New Stock Inquiry</button>
 </form>
-<p>
+<div ng-show="stocks.length">
 	<h2>In progress</h2>
 	<div class="list-group">
 		<div class="list-group-item" ng-repeat="s in stocks">
@@ -21,4 +27,4 @@
         	<div class="clearfix"></div>
 		</div>
 	</div>
-</p>
+</div>
